@@ -41,7 +41,7 @@ def load_image(name, color_key=None):
 tile_images = {
     'granny': load_image('granny.png'),
     'empty': load_image('grass.png'),
-    'player': load_image('hero.jpg'),
+    'player': load_image('hero.png'),
     'badguy': load_image('badguy.png')
 }
 
