@@ -50,15 +50,26 @@ def start_screen():
     intro_text = ["ИГРА ГОДА!   КОРМИ ГУЛЬ БАБУЛИ", "",
                   "Правила игры:",
                   "Корми голубей семечками",
+                  "Подойди ко мне для начала испытания",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
                   "",
                   "Не попадись гопнику на глаза!"]
 
-    fon = pygame.transform.scale(load_image('grannyFull.jfif'), (WIDTH, HEIGHT))
+    fon = pygame.transform.scale(load_image('grannyFull.png'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('Brown'))
+        string_rendered = font.render(line, 1, pygame.Color('White'))
         intro_rect = string_rendered.get_rect()
         text_coord += 10
         intro_rect.top = text_coord
@@ -72,6 +83,48 @@ def start_screen():
                 terminate()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 return  # начинаем игру
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def start_screen2():
+    intro_text = ["Здравствуй Чучмек!", "Ты захотел поиграть в игру?",
+                  "Правила игры:",
+                  "Корми голубей семечками",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "Попадешься мне на глаза - получишь в жбан!"]
+
+    fon = pygame.transform.scale(load_image('badguyFull.png'), (WIDTH, HEIGHT))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 30)
+    text_coord = 50
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('White'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -205,9 +258,11 @@ while running:
             if event.key == pygame.K_DOWN:
                 player.rect.y += STEP
     if LEVEL == 1 and pygame.sprite.collide_rect(player, granny):
-        clear()
         LEVEL += 1
+        start_screen2()
+        clear()
         player, _, bad_guy, level_x, level_y = generate_level(load_level("levelx2.txt"))
+
     camera.update(player)
     all_sprites.update()
     screen.fill(pygame.Color("white"))
