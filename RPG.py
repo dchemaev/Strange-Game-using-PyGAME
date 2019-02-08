@@ -19,6 +19,7 @@ all_sprites = pygame.sprite.Group()  # Группа всех спрайтов
 map_group = pygame.sprite.Group()  # Спрайты карты
 player_group = pygame.sprite.Group()  # Спрайты персонажей
 granny_group = pygame.sprite.Group()
+badguy_group = pygame.sprite.Group()
 
 
 def load_image(name, color_key=None):
@@ -41,7 +42,7 @@ tile_images = {
     'granny': load_image('granny.png'),
     'empty': load_image('grass.png'),
     'player': load_image('hero.jpg'),
-    # 'badguy': load_image('mario.png')
+    'badguy': load_image('badguy.png')
 }
 
 
@@ -78,6 +79,7 @@ def start_screen():
 def generate_level(level):
     new_player = None
     main_granny = None
+    bad_guy = None
     x, y = None, None
     for y in range(len(level)):
         for x in range(len(level[y])):
@@ -89,14 +91,25 @@ def generate_level(level):
             elif level[y][x] == '$':
                 Tile('empty', x, y)
                 main_granny = Granny(x, y)
+            elif level[y][x] == '%':
+                Tile('empty', x, y)
+                bad_guy = BadGuy(x, y)
 
-    return new_player, main_granny, x, y
+    return new_player, main_granny, bad_guy, x, y
 
 
 class Granny(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(granny_group, all_sprites)
         self.image = tile_images["granny"]
+        self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x,
+                                               TILE_HEIGHT * pos_y)
+
+
+class BadGuy(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(badguy_group, all_sprites)
+        self.image = tile_images["badguy"]
         self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x,
                                                TILE_HEIGHT * pos_y)
 
@@ -123,6 +136,14 @@ def load_level(filename):
 def terminate():
     pygame.quit()
     sys.exit()
+
+
+def clear():
+    global all_sprites, map_group, player_group, granny_group
+    all_sprites = pygame.sprite.Group()
+    map_group = pygame.sprite.Group()  # Спрайты карты
+    player_group = pygame.sprite.Group()  # Спрайты персонажей
+    granny_group = pygame.sprite.Group()
 
 
 class MainHero(pygame.sprite.Sprite):
@@ -165,7 +186,8 @@ class Camera:
 
 start_screen()
 level = load_level('levelex.txt')
-player, granny, level_x, level_y = generate_level(level)
+player, granny, _, level_x, level_y = generate_level(level)
+LEVEL = 1
 camera = Camera((level_x, level_y))
 
 running = True
@@ -182,8 +204,10 @@ while running:
                 player.rect.y -= STEP
             if event.key == pygame.K_DOWN:
                 player.rect.y += STEP
-    if pygame.sprite.collide_rect(player, granny):
-        terminate()
+    if LEVEL == 1 and pygame.sprite.collide_rect(player, granny):
+        clear()
+        LEVEL += 1
+        player, _, bad_guy, level_x, level_y = generate_level(load_level("levelx2.txt"))
     camera.update(player)
     all_sprites.update()
     screen.fill(pygame.Color("white"))
