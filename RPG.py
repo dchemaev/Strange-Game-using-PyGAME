@@ -168,11 +168,6 @@ level = load_level('levelex.txt')
 player, granny, level_x, level_y = generate_level(level)
 camera = Camera((level_x, level_y))
 
-"""""
-if Granny(x, y) == MainHero(x, y):
-    terminate()
-"""""
-
 running = True
 while running:
     for event in pygame.event.get():
@@ -187,15 +182,16 @@ while running:
                 player.rect.y -= STEP
             if event.key == pygame.K_DOWN:
                 player.rect.y += STEP
+    if pygame.sprite.collide_rect(player, granny):
+        terminate()
     camera.update(player)
     all_sprites.update()
     screen.fill(pygame.Color("white"))
     map_group.draw(screen)
     granny_group.draw(screen)
     player_group.draw(screen)
-
-    pygame.display.flip()
-    clock.tick(FPS)
+    for sprite in all_sprites:
+        camera.apply(sprite)
 
     pygame.display.flip()
     clock.tick(FPS)
