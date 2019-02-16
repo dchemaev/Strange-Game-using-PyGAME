@@ -26,7 +26,7 @@ all_sprites = pygame.sprite.Group()  # Группа всех спрайтов
 map_group = pygame.sprite.Group()  # Спрайты карты
 player_group = pygame.sprite.Group()  # Спрайты персонажей
 granny_group = pygame.sprite.Group()
-badguy_group = pygame.sprite.Group()
+badguy_group = pygame.sprite.Group()ёёё
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 pigeon_group = pygame.sprite.Group()
@@ -131,20 +131,6 @@ class Pigeon(pygame.sprite.Sprite):
         self.image = tile_images["pigeon"]
         self.rect = self.image.get_rect().move(TILE_WIDTH * pos_y,
                                                TILE_HEIGHT * pos_x)
-
-
-class Border(pygame.sprite.Sprite):
-    # строго вертикальный или строго горизонтальный отрезок
-    def __init__(self, x1, y1, x2, y2):
-        super().__init__(all_sprites)
-        if x1 == x2:  # вертикальная стенка
-            self.add(vertical_borders)
-            self.image = pygame.Surface([1, y2 - y1])
-            self.rect = pygame.Rect(x1, y1, 1, y2 - y1)
-        else:  # горизонтальная стенка
-            self.add(horizontal_borders)
-            self.image = pygame.Surface([x2 - x1, 1])
-            self.rect = pygame.Rect(x1, y1, x2 - x1, 1)
 
 
 class MainHero(pygame.sprite.Sprite):
@@ -366,6 +352,7 @@ class Level:
                         LEVEL += 1
                         return
                     """""
+            all_sprites.update()
             screen.fill(pygame.Color("Black"))
             all_sprites.draw(screen)
             player_group.draw(screen)
@@ -377,7 +364,7 @@ class Level:
 
 class Particle(pygame.sprite.Sprite):
     star = [load_image("star.png")]
-    for scale in (5, 10, 20):
+    for scale in (20, 20, 20):
         star.append(pygame.transform.scale(star[0], (scale, scale)))  # Изменяем размер с учетом перовй частицы
 
     def __init__(self, pos, dx, dy):
@@ -393,17 +380,19 @@ class Particle(pygame.sprite.Sprite):
     def update(self, *args):
         self.velocity[1] += self.gravity
 
-        self.rect.x += 5
-        self.rect.y += 10
-
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+        """""
         if not self.rect.colliderect(screen):  # Удаление частиц, вышедших за предели окна
             self.kill()
+          
         if not self.rect.colliderect(Pigeon):  # Удаление частиц, вышедших за предели окна
             self.kill()
+        """""
 
 
 def create_particles(position):
-    count = 20
+    count = 10
     speed = range(-5, 6)
     for _ in range(count):
         Particle(position, random.choice(speed), random.choice(speed))
@@ -415,10 +404,7 @@ def main():
 
     while running:
         StartScreen().run()
-        Border(5, 5, WIDTH - 5, 5)
-        Border(5, HEIGHT - 5, WIDTH - 5, HEIGHT - 5)
-        Border(5, 5, 5, HEIGHT - 5)
-        Border(WIDTH - 5, 5, WIDTH - 5, HEIGHT - 5)
+
         Level("levelex.txt").run()
     terminate()
 
