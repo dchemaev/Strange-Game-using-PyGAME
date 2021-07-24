@@ -26,7 +26,7 @@ all_sprites = pygame.sprite.Group()  # Группа всех спрайтов
 map_group = pygame.sprite.Group()  # Спрайты карты
 player_group = pygame.sprite.Group()  # Спрайты персонажей
 granny_group = pygame.sprite.Group()
-badguy_group = pygame.sprite.Group()ёёё
+badguy_group = pygame.sprite.Group()
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 pigeon_group = pygame.sprite.Group()
@@ -249,7 +249,6 @@ class StartScreen2:
         done = False
         snow_list = []
         while not done:
-
             for event in pygame.event.get():  # User did something
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:  # If user clicked close
@@ -302,7 +301,6 @@ class StartScreen2:
 
     def run(self):
         running = True
-
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -313,19 +311,63 @@ class StartScreen2:
             clock.tick(FPS)
 
 
+class EndScreen:
+    def __init__(self):
+        intro_text = ["ВЫ ПРОИГРАЛИ!"]
+
+        done = False
+        while not done:
+            for event in pygame.event.get():  # User did something
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:  # If user clicked close
+                        done = True  # Flag that we are done so we exit this loop
+                if event.type == pygame.QUIT:  # If user clicked close
+                    done = True  # Flag that we are done so we exit this loop
+
+            # Set the screen background
+            fon = pygame.transform.scale(load_image('putin.png'), (WIDTH, HEIGHT))
+            screen.blit(fon, (0, 0))
+            font = pygame.font.Font(None, 30)
+            text_coord = 50
+
+            for line in intro_text:
+                string_rendered = font.render(line, 1, pygame.Color('White'))
+                intro_rect = string_rendered.get_rect()
+                text_coord += 10
+                intro_rect.top = text_coord
+                intro_rect.x = 10
+                text_coord += intro_rect.height
+                screen.blit(string_rendered, intro_rect)
+
+            pygame.display.flip()
+            clock.tick(FPS)
+
+
+    def run(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    terminate()
+                elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                    return
+            pygame.display.flip()
+            clock.tick(FPS)
+
+
 class Level:
     def __init__(self, level_name):
         all_sprites.empty()
         player_group.empty()
         if LEVEL == 1:
             self.player, self.granny, _, _, level_x, level_y = generate_level(load_level(level_name))
-        if LEVEL == 2:
+        elif LEVEL == 2:
             self.player, _, self.badguy, self.pigeon, level_x, level_y = generate_level(load_level(level_name))
 
     def run(self):
         global LEVEL
         running = True
-
+        print(LEVEL)
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -343,15 +385,14 @@ class Level:
                         pos = [self.player.rect.x, self.player.rect.y]
                         create_particles(pos)
 
-                elif LEVEL == 1 and pygame.sprite.collide_rect(self.player, self.granny):
+                if LEVEL == 1 and pygame.sprite.collide_rect(self.player, self.granny):
                     LEVEL += 1
                     StartScreen2().run()
                     Level("levelx2.txt").run()
-                    """""
-                    if LEVEL == 2 and pygame.sprite.collide_rect(self.player, self.pigeon):
-                        LEVEL += 1
-                        return
-                    """""
+
+                if LEVEL == 2 and pygame.sprite.collide_rect(self.player, self.pigeon):
+                    EndScreen().run()
+                    return
             all_sprites.update()
             screen.fill(pygame.Color("Black"))
             all_sprites.draw(screen)
@@ -404,7 +445,6 @@ def main():
 
     while running:
         StartScreen().run()
-
         Level("levelex.txt").run()
     terminate()
 
